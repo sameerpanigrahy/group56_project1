@@ -28,16 +28,18 @@ const createAuthor = async function (req, res) {
 
     
     if (!isValid(data.email)) return res.status(400).send({ status: false, msg: "mail id is required" })
+
+    if (!isValidMail.test(data.email)) return res.status(406).send({
+      status: false, msg: "email id is not valid",
+      ValidMail: "email must be contain ==> @  Number  ."
+    })
     
     let uniqueEmail = await authorModel.findOne({ email: data.email })
     if (uniqueEmail) {
       return res.status(409).send({ status: false, msg: "Email Already Exists." })//(409)it is use for the conflict
     }
     
-    if (!isValidMail.test(data.email)) return res.status(406).send({
-      status: false, msg: "email id is not valid",
-      ValidMail: "email must be contain ==> @  Number  ."
-    })
+    
     
     if (!isValid(data.title)) return res.send({ status: false, msg: "Title is req" })
     if (!(["Mr", "Mrs", "Miss","Mast"].includes(data.title))) return res.status(406).send({
@@ -88,9 +90,9 @@ const loginAuthor = async function (req, res) {
     res.status(201).send({ status: true, msg: "You are successFully LogedIn", data: token })
   }
   catch (error) {
-    res.status(500).send({ status: false, msg: error.message })
+     return res.status(500).send({ status: false, msg: error.message })
   }
 };
 
-module.exports.loginAuthor = loginAuthor
-module.exports.createAuthor = createAuthor
+module.exports ={ loginAuthor,createAuthor}
+
